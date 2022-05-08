@@ -36,14 +36,15 @@ public class GuiClient extends JPanel implements IClient {
     public int _rowRequest = -1;
     public int _colRequest = -1;
 
-    public int boardHash;
+    public int _boardHash;
 
     @Override
     public Move NextMove(Board board) {
-        if (board.hashCode() != boardHash) {
+        if (board.hashCode() != _boardHash) {
             _rowRequest = -1;
             _colRequest = -1;
             updateBoard(board);
+            ((JFrame)SwingUtilities.getRoot(this)).setTitle("Your Move");
         } else if (_colRequest >= 0 && _rowRequest >= 0) {
             var result = board.validateMove(_rowRequest, _colRequest);
 
@@ -57,6 +58,7 @@ public class GuiClient extends JPanel implements IClient {
                         "Error",
                         JOptionPane.INFORMATION_MESSAGE);
             } else {
+                ((JFrame)SwingUtilities.getRoot(this)).setTitle("Waiting for other player");
                 return move;
             }
         }
@@ -76,7 +78,7 @@ public class GuiClient extends JPanel implements IClient {
                 }
             }
         }
-        boardHash = board.hashCode();
+        _boardHash = board.hashCode();
     }
 
     @Override
