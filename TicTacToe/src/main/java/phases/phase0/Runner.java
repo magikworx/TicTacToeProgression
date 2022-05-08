@@ -7,8 +7,7 @@ import tictactoe.players.ComputerPlayer;
 import tictactoe.players.LocalPlayer;
 
 public class Runner {
-    public static void main(String [] args) {
-        IClient io = new TerminalClient();
+    public static void Run(IClient io) {
         LocalPlayer lp = new LocalPlayer(io);
         ComputerPlayer cp = new ComputerPlayer();
         Game game = new Game(lp, cp);
