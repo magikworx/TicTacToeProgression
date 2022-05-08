@@ -177,16 +177,19 @@ public class NetworkClientHost implements Runnable, IClient {
 
     @Override
     public void Win(Board board) {
+        updateBoard(board);
         _gameStatus = 2;
     }
 
     @Override
     public void Lose(Board board) {
+        updateBoard(board);
         _gameStatus = 3;
     }
 
     @Override
     public void Draw(Board board) {
+        updateBoard(board);
         _gameStatus = 4;
     }
 }

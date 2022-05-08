@@ -17,7 +17,7 @@ public class GuiClient extends JPanel implements IClient {
     public GuiClient() {
         setLayout(new GridLayout(3,3));
         initializebuttons();
-        show();
+        setVisible(true);
     }
     public void initializebuttons()
     {
