@@ -1,13 +1,16 @@
 package tictactoe.channels;
 
+import tictactoe.BoardMarkers;
+import tictactoe.GameStates;
 import tictactoe.ui.IUi;
 import tictactoe.ui.IUiMoveListener;
+import tictactoe.MoveValidationErrors;
 import util.Pair;
 import util.SimpleFuture;
 
-public class DirectChannel implements IUiMoveListener{
+public class DirectChannel implements IUiMoveListener {
     public SimpleFuture<Pair<Integer, Integer>> _moveFuture;
-    public SimpleFuture<IUiMoveListener.ValidationErrors> _moveReturnFuture;
+    public SimpleFuture<MoveValidationErrors> _moveReturnFuture;
 
     public IUi _updateable;
 
@@ -17,7 +20,7 @@ public class DirectChannel implements IUiMoveListener{
     }
 
     @Override
-    public ValidationErrors madeMove(int row, int col) {
+    public MoveValidationErrors madeMove(int row, int col) {
         _moveReturnFuture = new SimpleFuture<>();
         while(true) {
             _moveFuture.put(new Pair<>(row, col));
@@ -38,11 +41,11 @@ public class DirectChannel implements IUiMoveListener{
         }
     }
 
-    public void validated(IUiMoveListener.ValidationErrors validationResult) {
+    public void validated(MoveValidationErrors validationResult) {
         _moveReturnFuture.put(validationResult);
     }
 
-    public void update(IUi.States state, IUi.BoardMarkers[][] board) {
+    public void update(GameStates state, BoardMarkers[][] board) {
         _updateable.update(state, board);
     }
 }

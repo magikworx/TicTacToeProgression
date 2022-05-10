@@ -1,8 +1,9 @@
 package tictactoe.ui;
 
+import tictactoe.BoardMarkers;
+import tictactoe.GameStates;
+
 public interface IUi {
-    enum States {Waiting, YourMove, Won, Lost, Draw}
-    enum BoardMarkers {X, O, Empty}
-    void update(States state, BoardMarkers[][] board);
+    void update(GameStates state, BoardMarkers[][] board);
     void addEventListener(IUiMoveListener listener);
 }

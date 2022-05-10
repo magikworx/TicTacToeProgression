@@ -1,18 +1,18 @@
 package tictactoe.players;
 
 import tictactoe.Board;
-import tictactoe.Game;
+import tictactoe.BoardMarkers;
 import util.Pair;
 
 public abstract class BasePlayer implements IPlayer {
-    private Game.Marker _marker;
+    private BoardMarkers _marker;
 
     /**
      * Sets the players marker on the board
      *
      * @param marker for player
      */
-    public void setMarker(Game.Marker marker) {
+    public void setMarker(BoardMarkers marker) {
         _marker = marker;
     }
 
@@ -21,7 +21,7 @@ public abstract class BasePlayer implements IPlayer {
      *
      * @return player's marker
      */
-    public Game.Marker getMarker() {
+    public BoardMarkers getMarker() {
         return _marker;
     }
 

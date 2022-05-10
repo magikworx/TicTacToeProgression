@@ -1,15 +1,18 @@
 package tictactoe.ui;
 
+import tictactoe.BoardMarkers;
+import tictactoe.GameStates;
+import tictactoe.MoveValidationErrors;
 import util.Terminal;
 
 public class TerminalUi implements IUi, Runnable{
     public IUiMoveListener _listener;
 
-    public States _state;
+    public GameStates _state;
     public BoardMarkers[][] _board;
 
     @Override
-    public void update(States state, BoardMarkers[][] board) {
+    public void update(GameStates state, BoardMarkers[][] board) {
         _state = state;
         _board = board;
     }
@@ -24,7 +27,7 @@ public class TerminalUi implements IUi, Runnable{
         int col = Terminal.getIntFromChoice("Select column (0,1,2): ", 0, 1, 2);
         if (_listener != null) {
             var result = _listener.madeMove(row, col);
-            if (result != IUiMoveListener.ValidationErrors.None) {
+            if (result != MoveValidationErrors.None) {
                 Terminal.println(result.toString());
             }
         }
@@ -49,7 +52,7 @@ public class TerminalUi implements IUi, Runnable{
     @Override
     public void run() {
         while(true) {
-            if (_board != null  && _state != States.Waiting) {
+            if (_board != null  && _state != GameStates.Waiting) {
                 printBoard(_board);
                 switch (_state){
                     case YourMove:

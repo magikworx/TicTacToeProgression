@@ -1,5 +1,9 @@
 package tictactoe.ui;
 
+import tictactoe.BoardMarkers;
+import tictactoe.GameStates;
+import tictactoe.MoveValidationErrors;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -49,7 +53,7 @@ public class SwingUi extends JPanel implements IUi {
         _listener = listener;
     }
 
-    public void update(States state, BoardMarkers[][] board) {
+    public void update(GameStates state, BoardMarkers[][] board) {
         updateBoard(board);
         switch (state) {
             case Won:
@@ -85,7 +89,7 @@ public class SwingUi extends JPanel implements IUi {
         public void actionPerformed(ActionEvent e)
         {
             if(_listener != null) {
-                IUiMoveListener.ValidationErrors errors = _listener.madeMove(_row, _col);
+                MoveValidationErrors errors = _listener.madeMove(_row, _col);
             }
         }
     }

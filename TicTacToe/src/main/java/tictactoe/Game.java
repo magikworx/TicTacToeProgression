@@ -6,9 +6,7 @@ import java.util.Random;
 
 public class Game {
   static Random rand = new Random();
-  public enum Marker {
-    X, O, Empty
-  }
+
   private final Board _board = new Board(3);
   private final IPlayer _player1;
   private final IPlayer _player2;
@@ -35,8 +33,8 @@ public class Game {
       _os = _player1;
     }
 
-    _xs.setMarker(Marker.X);
-    _os.setMarker(Marker.O);
+    _xs.setMarker(BoardMarkers.X);
+    _os.setMarker(BoardMarkers.O);
     _currentPlayer = _xs;
   }
   
@@ -89,16 +87,5 @@ public class Game {
       _xs.draw(_board);
       _os.draw(_board);
     }
-  }
-
-  public static class Status {
-      public enum States {Waiting, YourMove, Won, Lost, Draw}
-      public States _status;
-      public Marker [][] _board;
-
-      public Status(States status, Marker [][] board) {
-          _status = status;
-          _board = board;
-      }
   }
 }

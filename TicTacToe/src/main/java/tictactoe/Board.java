@@ -27,42 +27,42 @@ public class Board {
     }
   }
 
-  private Game.Marker[][] _board;
+  private BoardMarkers[][] _board;
 
   public int rowSize() {
     return _board.length;
   }
 
   public Board(int rowSize) {
-    _board = new Game.Marker[rowSize][rowSize];
+    _board = new BoardMarkers[rowSize][rowSize];
     reset();
   }
 
   public void reset() {
-    _board = new Game.Marker[rowSize()][rowSize()];
-    for (Game.Marker[] markers : _board) {
-      Arrays.fill(markers, Game.Marker.Empty);
+    _board = new BoardMarkers[rowSize()][rowSize()];
+    for (BoardMarkers[] markers : _board) {
+      Arrays.fill(markers, BoardMarkers.Empty);
     }
   }
 
-  public void setMarker(Game.Marker marker, int row, int col) {
+  public void setMarker(BoardMarkers marker, int row, int col) {
     _board[row][col] = marker;
   }
 
-  public Game.Marker getMarker(int row, int col) {
+  public BoardMarkers getMarker(int row, int col) {
     return _board[row][col];
   }
 
   public void clearMarker(int row, int col) {
-    _board[row][col] = Game.Marker.Empty;
+    _board[row][col] = BoardMarkers.Empty;
   }
 
   public boolean isEmpty(int row, int col) {
     return isEmpty(_board[row][col]);
   }
 
-  public boolean isEmpty(Game.Marker value) {
-    return value == Game.Marker.Empty;
+  public boolean isEmpty(BoardMarkers value) {
+    return value == BoardMarkers.Empty;
   }
 
   /**
@@ -98,9 +98,9 @@ public class Board {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    for (Game.Marker[] row : _board) {
+    for (BoardMarkers[] row : _board) {
       sb.append("|");
-      for (Game.Marker cell : row) {
+      for (BoardMarkers cell : row) {
         if (isEmpty(cell)) {
           sb.append(" |");
         } else {
@@ -112,35 +112,17 @@ public class Board {
     return sb.toString();
   }
 
-  public enum ValidationErrors {
-    None,
-    InvalidRow,
-    InvalidColumn,
-    AlreadyOccupied;
-
-    @Override
-    public String toString() {
-      switch (this){
-        case None: return "";
-        case InvalidRow: return "Invalid Row";
-        case InvalidColumn: return "Invalid Column";
-        case AlreadyOccupied: return "Cell already occupied";
-      }
-      return super.toString();
-    }
-  }
-
-  public ValidationErrors validateMove(int row, int column) {
+  public MoveValidationErrors validateMove(int row, int column) {
     if (row < 0 || row >= rowSize()) {
-      return ValidationErrors.InvalidRow;
+      return MoveValidationErrors.InvalidRow;
     }
     if (column < 0 || column >= rowSize()) {
-      return ValidationErrors.InvalidColumn;
+      return MoveValidationErrors.InvalidColumn;
     }
     if (!isEmpty(row, column)) {
-      return ValidationErrors.AlreadyOccupied;
+      return MoveValidationErrors.AlreadyOccupied;
     }
-    return ValidationErrors.None;
+    return MoveValidationErrors.None;
   }
 
   /**
@@ -158,8 +140,8 @@ public class Board {
    * @return true if no empty spots are available
    */
   public boolean isBoardFull() {
-    for (Game.Marker[] row : _board) {
-      for (Game.Marker cell : row) {
+    for (BoardMarkers[] row : _board) {
+      for (BoardMarkers cell : row) {
         // for each cell, is there an empty?
         if (isEmpty(cell)) {
           // if so, it's not full
@@ -177,7 +159,7 @@ public class Board {
    * @return true if X won
    */
   public boolean hasXWon() {
-    return rowWin(Game.Marker.X) || colWin(Game.Marker.X) || diagonalWin(Game.Marker.X);
+    return rowWin(BoardMarkers.X) || colWin(BoardMarkers.X) || diagonalWin(BoardMarkers.X);
   }
 
   /**
@@ -186,7 +168,7 @@ public class Board {
    * @return true if O won
    */
   public boolean hasOWon() {
-    return rowWin(Game.Marker.O) || colWin(Game.Marker.O) || diagonalWin(Game.Marker.O);
+    return rowWin(BoardMarkers.O) || colWin(BoardMarkers.O) || diagonalWin(BoardMarkers.O);
   }
 
   /**
@@ -195,12 +177,12 @@ public class Board {
    * @param mark to check for
    * @return true if the player has won on any row
    */
-  public boolean rowWin(Game.Marker mark) {
+  public boolean rowWin(BoardMarkers mark) {
     boolean hasWon = true;
-    for (Game.Marker[] row : _board) {
+    for (BoardMarkers[] row : _board) {
       // Assume the player has won
       hasWon = true;
-      for (Game.Marker cell : row) {
+      for (BoardMarkers cell : row) {
         // Is there anything like an empty square or a different mark that
         // can disqualify the win?
         if (isEmpty(cell) || !cell.equals(mark)) {
@@ -223,13 +205,13 @@ public class Board {
    * @param mark to check for
    * @return true if the player has won on any column
    */
-  public boolean colWin(Game.Marker mark) {
+  public boolean colWin(BoardMarkers mark) {
     boolean hasWon = true;
     for (int column = 0; column < _board[0].length; column++) {
       // Assume the player has won
       hasWon = true;
-      for (Game.Marker[] row : _board) {
-        Game.Marker cell = row[column];
+      for (BoardMarkers[] row : _board) {
+        BoardMarkers cell = row[column];
         // Is there anything like an empty square or a different mark that
         // can disqualify the win?
         if (isEmpty(cell) || !cell.equals(mark)) {
@@ -252,11 +234,11 @@ public class Board {
    * @param mark to check for
    * @return true if the player has won on any diagonal
    */
-  public boolean diagonalWin(Game.Marker mark) {
+  public boolean diagonalWin(BoardMarkers mark) {
     boolean hasWon = true;
     // Assume the player has won
     for (int i = 0; i < _board.length; i++) {
-      Game.Marker cell = _board[i][i];
+      BoardMarkers cell = _board[i][i];
       // Is there anything like an empty square or a different mark that
       // can disqualify the win?
       if (isEmpty(cell) || !cell.equals(mark)) {
@@ -271,7 +253,7 @@ public class Board {
       hasWon = true;
       for (int i = 0; i < _board.length; i++) {
         // _board.length -i - 1 goes from lower left to upper right
-        Game.Marker cell = _board[_board.length - i - 1][i];
+        BoardMarkers cell = _board[_board.length - i - 1][i];
         // Is there anything like an empty square or a different mark that
         // can disqualify the win?
         if (isEmpty(cell) || !cell.equals(mark)) {

@@ -1,6 +1,7 @@
 package tictactoe.players;
 
 import tictactoe.Board;
+import tictactoe.BoardMarkers;
 import tictactoe.Game;
 import util.Pair;
 
@@ -51,9 +52,9 @@ public class SmartComputerPlayer extends BasePlayer {
      */
     public int minimax(Board board, int depth, boolean maximizing) {
         // Determine which player is being evaluated
-        Game.Marker marker = getMarker();
-        Game.Marker otherMarker = marker.equals(Game.Marker.X) ? Game.Marker.O : Game.Marker.X;
-        Game.Marker currentMarker = maximizing ? marker : otherMarker;
+        BoardMarkers marker = getMarker();
+        BoardMarkers otherMarker = marker.equals(BoardMarkers.X) ? BoardMarkers.O : BoardMarkers.X;
+        BoardMarkers currentMarker = maximizing ? marker : otherMarker;
 
         if (board.isGameOver()) { // found a leaf node
             return score(board, depth); // give the score for the other player
@@ -89,13 +90,13 @@ public class SmartComputerPlayer extends BasePlayer {
      */
     public int score(Board board, int depth) {
         if (board.hasXWon()) {
-            if (getMarker().equals(Game.Marker.X)) {
+            if (getMarker().equals(BoardMarkers.X)) {
                 return 10 - depth; // I have won
             } else {
                 return depth - 10; // They have won
             }
         } else if (board.hasOWon()) {
-            if (getMarker().equals(Game.Marker.O)) {
+            if (getMarker().equals(BoardMarkers.O)) {
                 return 10 - depth; // I have won
             } else {
                 return depth - 10; // They have won

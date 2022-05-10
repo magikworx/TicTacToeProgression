@@ -1,6 +1,7 @@
 package tictactoe.players;
 
 import tictactoe.Board;
+import tictactoe.BoardMarkers;
 import tictactoe.Game;
 import util.Pair;
 
@@ -18,9 +19,9 @@ public class ComputerPlayer extends BasePlayer {
         for (int r = 0; r < board.rowSize(); ++r) { // for each row
             for (int c = 0; c < board.rowSize(); c++) { // for each column
                 // pull the cell
-                Game.Marker cell = board.getMarker(r, c);
+                BoardMarkers cell = board.getMarker(r, c);
                 // if it's available
-                if (cell == null || cell.equals(Game.Marker.Empty)) {
+                if (cell == null || cell.equals(BoardMarkers.Empty)) {
                     // return the cell
                     return new Pair<>(r, c);
                 }
