@@ -1,9 +1,11 @@
 package phases.phase0;
 
-import tictactoe.clients.TerminalClient;
+import tictactoe.ui.TerminalUi;
 
 public class TerminalRunner {
     public static void main(String [] args) {
-        Runner.Run(new TerminalClient());
+        var terminal = new TerminalUi();
+        new Thread(terminal).start();
+        Runner.Run(terminal);
     }
 }

@@ -1,6 +1,5 @@
 package tictactoe;
 
-import tictactoe.clients.IClient;
 import tictactoe.players.IPlayer;
 
 import java.util.Random;
@@ -90,5 +89,16 @@ public class Game {
       _xs.draw(_board);
       _os.draw(_board);
     }
+  }
+
+  public static class Status {
+      public enum States {Waiting, YourMove, Won, Lost, Draw}
+      public States _status;
+      public Marker [][] _board;
+
+      public Status(States status, Marker [][] board) {
+          _status = status;
+          _board = board;
+      }
   }
 }

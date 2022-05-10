@@ -1,7 +1,5 @@
 package tictactoe;
 
-import util.Pair;
-
 import java.util.Arrays;
 
 /**
@@ -114,17 +112,35 @@ public class Board {
     return sb.toString();
   }
 
-  public Pair<Boolean, String> validateMove(int row, int column) {
+  public enum ValidationErrors {
+    None,
+    InvalidRow,
+    InvalidColumn,
+    AlreadyOccupied;
+
+    @Override
+    public String toString() {
+      switch (this){
+        case None: return "";
+        case InvalidRow: return "Invalid Row";
+        case InvalidColumn: return "Invalid Column";
+        case AlreadyOccupied: return "Cell already occupied";
+      }
+      return super.toString();
+    }
+  }
+
+  public ValidationErrors validateMove(int row, int column) {
     if (row < 0 || row >= rowSize()) {
-      return new Pair<>(false, "Invalid row");
+      return ValidationErrors.InvalidRow;
     }
     if (column < 0 || column >= rowSize()) {
-      return new Pair<>(false, "Invalid column");
+      return ValidationErrors.InvalidColumn;
     }
     if (!isEmpty(row, column)) {
-      return new Pair<>(false, "Cell already taken");
+      return ValidationErrors.AlreadyOccupied;
     }
-    return new Pair<>(true, null);
+    return ValidationErrors.None;
   }
 
   /**

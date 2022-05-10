@@ -1,13 +1,15 @@
 package phases.phase0;
 
+import tictactoe.channels.DirectChannel;
+import tictactoe.ui.IUi;
 import tictactoe.Game;
-import tictactoe.clients.IClient;
 import tictactoe.players.ComputerPlayer;
-import tictactoe.players.LocalPlayer;
+import tictactoe.players.ChannelPlayer;
 
 public class Runner {
-    public static void Run(IClient io) {
-        var lp = new LocalPlayer(io);
+    public static void Run(IUi ui) {
+        DirectChannel channel = new DirectChannel(ui);
+        var lp = new ChannelPlayer(channel);
         var cp = new ComputerPlayer(); //new SmartComputerPlayer();
         Game game = new Game(lp, cp);
         game.newGame();
