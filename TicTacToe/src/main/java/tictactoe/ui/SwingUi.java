@@ -3,19 +3,43 @@ package tictactoe.ui;
 import tictactoe.BoardMarkers;
 import tictactoe.GameStates;
 import tictactoe.MoveValidationErrors;
+import tictactoe.channels.DirectChannel;
+import util.Terminal;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class SwingUi extends JPanel implements IUi {
+public class SwingUi extends JPanel {
+    DirectChannel _channel;
     JButton[][] _buttons = new JButton[3][3];
-    IUiMoveListener _listener;
 
-    public SwingUi() {
+    public SwingUi(DirectChannel channel) {
+        _channel = channel;
         setLayout(new GridLayout(3,3));
         initializebuttons();
+        new Thread(()->{
+            while(true) {
+                var newState = _channel.getUpdate();
+                var state = newState.get_first();
+                var board = newState.get_second();
+                if (board != null) {
+                    update(state, board);
+                    switch (state) {
+                        case Won:
+                        case Lost:
+                        case Draw:
+                            return;
+                    }
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
         setVisible(true);
     }
 
@@ -47,10 +71,6 @@ public class SwingUi extends JPanel implements IUi {
                 }
             }
         });
-    }
-
-    public void addEventListener(IUiMoveListener listener) {
-        _listener = listener;
     }
 
     public void update(GameStates state, BoardMarkers[][] board) {
@@ -88,9 +108,7 @@ public class SwingUi extends JPanel implements IUi {
         }
         public void actionPerformed(ActionEvent e)
         {
-            if(_listener != null) {
-                MoveValidationErrors errors = _listener.madeMove(_row, _col);
-            }
+            var result = _channel.madeMove(_row, _col);
         }
     }
 }

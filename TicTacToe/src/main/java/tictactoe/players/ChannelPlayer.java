@@ -19,7 +19,6 @@ public class ChannelPlayer extends BasePlayer {
 
     @Override
     public Pair<Integer, Integer> getMove(Board board) {
-        _channel.update(GameStates.YourMove, toUi(board));
         while(true) {
             var move = _channel.getMove();
             var validate = board.validateMove(move.get_first(), move.get_second());
@@ -32,18 +31,8 @@ public class ChannelPlayer extends BasePlayer {
     }
 
     @Override
-    public void lose(Board board) {
-        _channel.update(GameStates.Lost, toUi(board));
-    }
-
-    @Override
-    public void win(Board board) {
-        _channel.update(GameStates.Won, toUi(board));
-    }
-
-    @Override
-    public void draw(Board board) {
-        _channel.update(GameStates.Draw, toUi(board));
+    public void updateStatus(GameStates state, Board board) {
+        _channel.updateStatus(state, toUi(board));
     }
 
     MoveValidationErrors toUi(MoveValidationErrors error) {

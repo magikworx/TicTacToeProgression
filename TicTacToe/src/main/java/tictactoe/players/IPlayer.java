@@ -2,6 +2,7 @@ package tictactoe.players;
 
 import tictactoe.Board;
 import tictactoe.BoardMarkers;
+import tictactoe.GameStates;
 import util.Pair;
 
 public interface IPlayer {
@@ -9,7 +10,5 @@ public interface IPlayer {
     BoardMarkers getMarker();
 
     Pair<Integer, Integer> getMove(Board board);
-    void lose(Board board);
-    void win(Board board);
-    void draw(Board board);
+    void updateStatus(GameStates state, Board board);
 }

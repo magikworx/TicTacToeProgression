@@ -3,33 +3,24 @@ package tictactoe.ui;
 import tictactoe.BoardMarkers;
 import tictactoe.GameStates;
 import tictactoe.MoveValidationErrors;
+import tictactoe.channels.DirectChannel;
 import util.Terminal;
 
-public class TerminalUi implements IUi, Runnable{
-    public IUiMoveListener _listener;
-
+public class TerminalUi implements Runnable {
+    public DirectChannel _channel;
     public GameStates _state;
     public BoardMarkers[][] _board;
 
-    @Override
-    public void update(GameStates state, BoardMarkers[][] board) {
-        _state = state;
-        _board = board;
-    }
-
-    @Override
-    public void addEventListener(IUiMoveListener listener) {
-        _listener = listener;
+    public TerminalUi(DirectChannel channel){
+        _channel = channel;
     }
 
     public void makeMove() {
         int row = Terminal.getIntFromChoice("Select row (0,1,2): ", 0, 1, 2);
         int col = Terminal.getIntFromChoice("Select column (0,1,2): ", 0, 1, 2);
-        if (_listener != null) {
-            var result = _listener.madeMove(row, col);
-            if (result != MoveValidationErrors.None) {
-                Terminal.println(result.toString());
-            }
+        var result = _channel.madeMove(row, col);
+        if (result != MoveValidationErrors.None) {
+            Terminal.println(result.toString());
         }
     }
 
@@ -52,9 +43,12 @@ public class TerminalUi implements IUi, Runnable{
     @Override
     public void run() {
         while(true) {
+            var newState = _channel.getUpdate();
+            _state = newState.get_first();
+            _board = newState.get_second();
             if (_board != null  && _state != GameStates.Waiting) {
                 printBoard(_board);
-                switch (_state){
+                switch (_state) {
                     case YourMove:
                         makeMove();
                         break;

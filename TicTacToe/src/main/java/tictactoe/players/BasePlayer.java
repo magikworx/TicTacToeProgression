@@ -2,6 +2,7 @@ package tictactoe.players;
 
 import tictactoe.Board;
 import tictactoe.BoardMarkers;
+import tictactoe.GameStates;
 import util.Pair;
 
 public abstract class BasePlayer implements IPlayer {
@@ -34,9 +35,5 @@ public abstract class BasePlayer implements IPlayer {
     public abstract Pair<Integer, Integer> getMove(Board board);
 
     @Override
-    public void lose(Board board) { }
-    @Override
-    public void win(Board board) { }
-    @Override
-    public void draw(Board board) { }
+    public void updateStatus(GameStates state, Board board){}
 }

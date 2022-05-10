@@ -6,7 +6,6 @@ import java.util.Random;
 
 public class Game {
   static Random rand = new Random();
-
   private final Board _board = new Board(3);
   private final IPlayer _player1;
   private final IPlayer _player2;
@@ -67,6 +66,13 @@ public class Game {
 
   public void next() {
     if (isGameOver()) return;
+    if (_currentPlayer == _xs) {
+      _xs.updateStatus(GameStates.YourMove, _board);
+      _os.updateStatus(GameStates.Waiting, _board);
+    } else {
+      _xs.updateStatus(GameStates.Waiting, _board);
+      _os.updateStatus(GameStates.YourMove, _board);
+    }
     var pair = _currentPlayer.getMove(_board);
     _board.setMarker(_currentPlayer.getMarker(), pair.get_first(), pair.get_second());
     if (_currentPlayer == _xs) {
@@ -78,14 +84,14 @@ public class Game {
 
   public void gameOver() {
     if (_board.hasXWon()) {
-      _xs.win(_board);
-      _os.lose(_board);
+      _xs.updateStatus(GameStates.Won, _board);
+      _os.updateStatus(GameStates.Lost, _board);
     } else if (_board.hasOWon()) {
-      _xs.lose(_board);
-      _os.win(_board);
+      _xs.updateStatus(GameStates.Lost, _board);
+      _os.updateStatus(GameStates.Won, _board);
     } else {
-      _xs.draw(_board);
-      _os.draw(_board);
+      _xs.updateStatus(GameStates.Draw, _board);
+      _os.updateStatus(GameStates.Draw, _board);
     }
   }
 }
