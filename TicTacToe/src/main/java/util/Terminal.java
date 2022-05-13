@@ -9,6 +9,9 @@ public class Terminal {
   public static InputStream istream = System.in;
   public static PrintStream ostream = System.out;
   public static PrintStream estream = System.err;
+  public static void println() {
+    ostream.println();
+  }
   public static void println(String output) {
     ostream.println(output);
   }
