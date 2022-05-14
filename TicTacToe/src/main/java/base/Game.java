@@ -56,6 +56,7 @@ public class Game {
             return Math.max(Math.max(rowWin(board), colWin(board)), diagWin(board));
         }
         public static int getCurrentPlayer(int[] board) {
+            if(isGameOver(board)) return 0;
             int zeros = 0;
             for(var cell : board){
                 if(cell == 0) zeros++;
