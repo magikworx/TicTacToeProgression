@@ -10,6 +10,7 @@ public class Optional<T> {
     private Optional() {
         _isEmpty = true;
     }
+
     private Optional(T value) {
         if (value == null) {
             throw new NullPointerException("Value cannot be null");
@@ -33,17 +34,20 @@ public class Optional<T> {
         if (mapper == null) {
             throw new NullPointerException("Mapper function cannot be null");
         }
-        if(_isEmpty) return (Optional<U>) _empty;
+        if (_isEmpty) return (Optional<U>) _empty;
         return ofNullable(mapper.apply(_value));
     }
 
     private static final Optional<?> _empty = new Optional<>();
+
     public static <T> Optional<T> empty() {
-        return (Optional<T>)_empty;
+        return (Optional<T>) _empty;
     }
+
     public static <T> Optional<T> of(T value) {
         return new Optional<>(value);
     }
+
     public static <T> Optional<T> ofNullable(T value) {
         return value == null ? empty() : of(value);
     }
