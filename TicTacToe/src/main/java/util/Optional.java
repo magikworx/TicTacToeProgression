@@ -18,7 +18,7 @@ public class Optional<T> {
         _value = value;
     }
 
-    boolean isPresent() {
+    public boolean isPresent() {
         return _value != null;
     }
 

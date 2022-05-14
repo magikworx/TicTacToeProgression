@@ -9,19 +9,19 @@ public class Terminal {
   public static InputStream istream = System.in;
   public static PrintStream ostream = System.out;
   public static PrintStream estream = System.err;
-  public static void println() {
+  public static synchronized void println() {
     ostream.println();
   }
-  public static void println(String output) {
+  public static synchronized void println(String output) {
     ostream.println(output);
   }
-  public static void print(String output) {
+  public static synchronized void print(String output) {
     ostream.print(output);
   }
-  public static void errorln(String output) {
+  public static synchronized void errorln(String output) {
     estream.println(output);
   }
-  public static void error(String output) {
+  public static synchronized void error(String output) {
     estream.print(output);
   }
 
