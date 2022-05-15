@@ -116,7 +116,7 @@ public class Game {
             if (board[topright] > 0
                     && board[topright] == board[middle]
                     && board[topright] == board[bottomleft]) {
-                return board[topleft];
+                return board[topright];
             }
             return 0;
         }
