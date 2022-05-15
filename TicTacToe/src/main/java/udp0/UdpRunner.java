@@ -11,8 +11,8 @@ public class UdpRunner {
 //        UdpPlayerTerminal.Launch(8891);
 
         UdpPlayerServer.Launch(8889, game);
-        UdpPlayerGui.Launch(8889);
-        UdpPlayerTerminal.Launch(8889);
+        //UdpPlayerGui.Launch(8889);
+//        UdpPlayerTerminal.Launch(8889);
 
         DumbAi.Launch(game);
     }
