@@ -1,4 +1,4 @@
-package udp1;
+package udp3;
 
 import base.Game;
 import util.Optional;
@@ -46,7 +46,7 @@ public class UdpPlayerTerminal implements Runnable {
             while (true) {
                 byte[] buffer = {0, 0, 0};
                 Optional<byte[]> responsePack =
-                        UDP.sendAndReceiveWithTimeout(sock, receiverIp, _port, buffer, 100, -1);
+                        UDP.Checksummed.sendAndReceive(sock, receiverIp, _port, buffer, 100, -1);
                 byte[] response = responsePack.get();
                 var player = response[1];
                 var board = new int[9];
@@ -64,7 +64,7 @@ public class UdpPlayerTerminal implements Runnable {
                     int col = Terminal.getIntFromChoice("Enter column[0,1,2]: ", 0, 1, 2);
                     byte[] move_buffer = {1, (byte) row, (byte) col};
                     Optional<byte[]> moveResponsePack =
-                            UDP.sendAndReceiveWithTimeout(sock, receiverIp, _port, move_buffer, 100, -1);
+                            UDP.Checksummed.sendAndReceive(sock, receiverIp, _port, move_buffer, 100, -1);
                     byte[] moveResponse = moveResponsePack.get();
                     int validation = moveResponse[1];
                     switch (validation) {
@@ -88,7 +88,8 @@ public class UdpPlayerTerminal implements Runnable {
                     } else {
                         Terminal.println("You lose");
                     }
-                    UDP.bestEffortSend(sock, receiverIp, _port, new byte[0], 100, 20);
+
+                    UDP.Checksummed.bestEffortSend(sock, receiverIp, _port, new byte[0], 100, 20);
                     break;
                 }
             }

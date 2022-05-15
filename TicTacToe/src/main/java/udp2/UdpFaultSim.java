@@ -1,12 +1,9 @@
 package udp2;
 
-import util.UDP;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.util.Collections;
 import java.util.Random;
 
 public class UdpFaultSim implements Runnable {

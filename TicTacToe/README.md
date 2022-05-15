@@ -14,8 +14,7 @@ simple udp implementation
 - corruption tolerant with TCP checksums
 - expanded fault injection capability
 ### udp3
-- next up
-  - message ids / origin info for keeping for rejecting retries
-  - potentially out of order message detection
+- message ids for matching retries
+- message id history for rejecting retries
 ### util
 utilities and base structures for packing and transporting data

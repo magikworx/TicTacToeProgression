@@ -1,9 +1,11 @@
-package udp1;
+package udp3;
 
 import base.Game;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class UdpPlayerServer implements Game.Player, Runnable {
     public int _port;
@@ -50,20 +52,31 @@ public class UdpPlayerServer implements Game.Player, Runnable {
         try (DatagramSocket sock = new DatagramSocket(_port)) {
             // create a socket that can listen in on localhost port 8889
 
+            ArrayBlockingQueue<Byte> last = new ArrayBlockingQueue<>(10);
             boolean shouldExit = false;
             while (!shouldExit) {
 //                    System.out.println("Waiting for packet:");
                 DatagramPacket pack = UDP.receiveRawPacket(sock);
+                var pack_res = UDP.Checksummed.unpack(pack.getData());
+                if(!pack_res.isPresent()) {
+                    continue;
+                }
 
-                if (pack.getLength() == 0) {
+                byte id = pack_res.get().get_first();
+                byte[] buffer = pack_res.get().get_second();
+
+                if (buffer.length == 0) {
                     shouldExit = true;
                     continue;
                 }
 
+                if(last.contains(id)){ continue; }
+                if (last.remainingCapacity() == 0) last.remove();
+                last.add(id);
+
                 // on successful receipt of packet, populate the receive packet object
-                byte[] buffer = pack.getData();
                 byte[] response = process(buffer);
-                UDP.send(sock, pack.getAddress(), pack.getPort(), response);
+                UDP.Checksummed.send(sock, pack.getAddress(), pack.getPort(), id, response);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,7 +1,6 @@
 package udp0;
 
 import base.Game;
-import util.UDP;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;

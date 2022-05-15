@@ -2,7 +2,6 @@ package udp0;
 
 import base.Game;
 import util.Terminal;
-import util.UDP;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
