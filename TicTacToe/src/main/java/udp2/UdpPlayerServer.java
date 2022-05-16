@@ -1,9 +1,11 @@
 package udp2;
 
 import base.Game;
+import udp.Checksummed;
+import util.Triplet;
 
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 
 public class UdpPlayerServer implements Game.Player, Runnable {
     public int _port;
@@ -53,21 +55,17 @@ public class UdpPlayerServer implements Game.Player, Runnable {
             boolean shouldExit = false;
             while (!shouldExit) {
 //                    System.out.println("Waiting for packet:");
-                DatagramPacket pack = UDP.receiveRawPacket(sock);
-                var pack_res = UDP.Checksummed.unpack(pack.getData());
-                if(!pack_res.isPresent()) {
-                    continue;
-                }
+                Triplet<InetAddress, Integer, byte[]> request = Checksummed.Instance.receive(sock);
+                byte[] buffer = request.get_third();
 
-                if (pack_res.get().length == 0) {
+                if (request.get_third().length == 0) {
                     shouldExit = true;
                     continue;
                 }
 
                 // on successful receipt of packet, populate the receive packet object
-                byte[] buffer = pack_res.get();
                 byte[] response = process(buffer);
-                UDP.Checksummed.send(sock, pack.getAddress(), pack.getPort(), response);
+                Checksummed.Instance.send(sock, request.get_first(), request.get_second(), response);
             }
         } catch (Exception e) {
             e.printStackTrace();

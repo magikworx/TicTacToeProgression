@@ -24,7 +24,7 @@ public class SmartAi implements Game.Player, Runnable {
     public int[] convert(int[][] board2d) {
         int[] board = new int[9];
         for (int row = 0; row < 3; ++row) {
-            System.arraycopy(board2d[row], 0, board, row*3, 3);
+            System.arraycopy(board2d[row], 0, board, row * 3, 3);
         }
         return board;
     }
@@ -34,13 +34,14 @@ public class SmartAi implements Game.Player, Runnable {
         while (true) {
             var board = _game.getStatus();
             if (Game.Rules.getCurrentPlayer(board) == _player) {
-                int[][]board2d = convert(board);
+                int[][] board2d = convert(board);
                 var move = getMove(board2d);
                 _game.makeMove(this, move.get_first(), move.get_second());
             }
             if (Game.Rules.isGameOver(board)) break;
         }
     }
+
     public Pair<Integer, Integer> getMove(int[][] board) {
         // set up storage
         Pair<Integer, Integer> result = new Pair<>(0, 0);
@@ -71,15 +72,16 @@ public class SmartAi implements Game.Player, Runnable {
 
     /**
      * Performs a minimax analysis of a particular position and returns likelihood of winning from the position
-     * @param board to analyze
-     * @param depth the weight for analysis based on distance from root
+     *
+     * @param board      to analyze
+     * @param depth      the weight for analysis based on distance from root
      * @param maximizing false if their turn, true if mine
      * @return range from -10(losing) to 10(winning)
      */
     public int minimax(int[][] board, int depth, boolean maximizing) {
         // Determine which player is being evaluated
         int player = _player;
-        int otherPlayer = player == 1? 2 : 1;
+        int otherPlayer = player == 1 ? 2 : 1;
         int currentMarker = maximizing ? player : otherPlayer;
 
         if (Game.Rules.isGameOver(convert(board))) { // found a leaf node
@@ -110,6 +112,7 @@ public class SmartAi implements Game.Player, Runnable {
 
     /**
      * Evaluates a position and assigns a score
+     *
      * @param board to analyze
      * @param depth to weight by
      * @return a score from -10 to 10 if game over, 0 if still playing

@@ -1,10 +1,12 @@
 package udp3;
 
 import base.Game;
+import udp.IdBased;
+import util.Triplet;
 
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.Queue;
+import java.net.InetAddress;
+import java.util.Hashtable;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class UdpPlayerServer implements Game.Player, Runnable {
@@ -52,31 +54,47 @@ public class UdpPlayerServer implements Game.Player, Runnable {
         try (DatagramSocket sock = new DatagramSocket(_port)) {
             // create a socket that can listen in on localhost port 8889
 
+            // allows for least-recently used type purging
             ArrayBlockingQueue<Byte> last = new ArrayBlockingQueue<>(10);
+            // to handle double move requests that are retries
+            Hashtable<Byte, byte[]> lastResponses = new Hashtable<>();
+
             boolean shouldExit = false;
             while (!shouldExit) {
-//                    System.out.println("Waiting for packet:");
-                DatagramPacket pack = UDP.receiveRawPacket(sock);
-                var pack_res = UDP.Checksummed.unpack(pack.getData());
-                if(!pack_res.isPresent()) {
-                    continue;
-                }
+                Triplet<InetAddress, Integer, byte[]> request = IdBased.Instance.receive(sock);
 
-                byte id = pack_res.get().get_first();
-                byte[] buffer = pack_res.get().get_second();
-
-                if (buffer.length == 0) {
+                if (request.get_third().length == 0) {
                     shouldExit = true;
                     continue;
                 }
 
-                if(last.contains(id)){ continue; }
-                if (last.remainingCapacity() == 0) last.remove();
-                last.add(id);
+                byte[] requestWithId = request.get_third();
+
+                // filter duplicates with known answers
+                var id = requestWithId[0];
+                if (last.contains(id)) {
+                    IdBased.Instance.send(sock, request.get_first(), request.get_second(), lastResponses.get(id));
+                    continue;
+                }
+                // purge old responses
+                if (last.remainingCapacity() == 0) {
+                    lastResponses.remove(last.remove());
+                }
+
+                byte[] buffer = new byte[requestWithId.length - 1];
+                System.arraycopy(requestWithId, 1, buffer, 0, buffer.length);
 
                 // on successful receipt of packet, populate the receive packet object
                 byte[] response = process(buffer);
-                UDP.Checksummed.send(sock, pack.getAddress(), pack.getPort(), id, response);
+
+                byte[] responseWithId = new byte[response.length + 1];
+                System.arraycopy(response, 0, responseWithId, 1, response.length);
+                responseWithId[0] = requestWithId[0];
+
+                // add newest successful response
+                last.add(id);
+                lastResponses.put(id, responseWithId);
+                IdBased.Instance.send(sock, request.get_first(), request.get_second(), responseWithId);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,8 +1,10 @@
 package udp0;
 
 import base.Game;
+import udp.Base;
 import util.Optional;
 import util.Pair;
+import util.Triplet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,13 +35,14 @@ public class UdpPlayerGui extends JPanel {
                 InetAddress receiverIp = InetAddress.getByName("localhost");
 
                 while (true) {
-                    byte[] buffer = {0, 0, 0};
-                    UDP.send(sock, receiverIp, _port, buffer);
-                    byte[] response = UDP.receive(sock);
-                    var player = response[1];
+                    byte[] statusRequestBuffer = {0, 0, 0};
+                    Triplet<InetAddress, Integer, byte[]> statusResponse =
+                            Base.Instance.sendAndReceive(sock, receiverIp, _port, statusRequestBuffer);
+                    var statusResponseBuffer = statusResponse.get_third();
+                    var player = statusResponseBuffer[1];
                     var board = new int[9];
                     for (int i = 0; i < 9; ++i) {
-                        board[i] = response[i + 2];
+                        board[i] = statusResponseBuffer[i + 2];
                     }
 
                     int boardHash = Game.Rules.hashBoard(board);
@@ -61,10 +64,11 @@ public class UdpPlayerGui extends JPanel {
                     if (_moveRequest.isPresent()) {
                         int row = _moveRequest.get().get_first();
                         int col = _moveRequest.get().get_second();
-                        byte[] move_buffer = {1, (byte) row, (byte) col};
-                        UDP.send(sock, receiverIp, _port, move_buffer);
-                        byte[] move_resp = UDP.receive(sock);
-                        int validation = move_resp[1];
+                        byte[] moveRequestBuffer = {1, (byte) row, (byte) col};
+                        Triplet<InetAddress, Integer, byte[]> moveResponse =
+                                Base.Instance.sendAndReceive(sock, receiverIp, _port, moveRequestBuffer);
+                        var moveResponseBuffer = moveResponse.get_third();
+                        int validation = moveResponseBuffer[1];
                         _moveRequest = Optional.empty();
                     }
                     if (Game.Rules.isGameOver(board)) {
@@ -85,7 +89,7 @@ public class UdpPlayerGui extends JPanel {
                                     "Game Over",
                                     JOptionPane.INFORMATION_MESSAGE);
                         }
-                        UDP.send(sock, receiverIp, _port, new byte[0]);
+                        Base.Instance.send(sock, receiverIp, _port, new byte[0]);
                         break;
                     }
                 }

@@ -34,6 +34,7 @@ public class Game {
             if (column < 0 || column > 2) return 2;
             if (_board[row * 3 + column] != 0) return 3;
             _board[row * 3 + column] = currentPlayer;
+            return 0;
         }
         return -1;
     }

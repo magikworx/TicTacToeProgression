@@ -1,7 +1,10 @@
 package udp2;
 
+import udp.Base;
+import udp.Checksummed;
+import util.Triplet;
+
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Random;
@@ -39,31 +42,35 @@ public class UdpFaultSim implements Runnable {
 
             boolean shouldExit = false;
             while (!shouldExit) {
-                DatagramPacket requestPacket = UDP.receiveRawPacket(serverSock);
-                var request_res = UDP.Checksummed.unpack(requestPacket.getData());
-                if (request_res.isPresent() && request_res.get().length == 0) {
-                    UDP.Checksummed.bestEffortSend(clientSock, requestPacket.getAddress(), _outgoingPort,
-                            request_res.get(), 100, 10);
+                Triplet<InetAddress, Integer, byte[]> requestPacket = Checksummed.Instance.receive(serverSock);
+                byte[] requestBuffer = requestPacket.get_third();
+
+                if (requestBuffer.length == 0) {
+                    Checksummed.Instance.send(clientSock, requestPacket.get_first(), _outgoingPort, requestBuffer);
                     shouldExit = true;
                     continue;
                 }
 
-                // on successful receipt of packet, populate the receive packet object
-                byte[] requestBuffer = requestPacket.getData();
-                UDP.send(clientSock, outgoingIp, _outgoingPort, requestBuffer);
-                DatagramPacket replyPacket = UDP.receiveRawPacket(clientSock);
-
-                byte[] replyBuffer = replyPacket.getData();
-                // shuffle packets randomly
-                if (_r.nextBoolean()){
-                   replyBuffer = shuffle(replyBuffer);
-                }
                 // drop packets
-                if (_r.nextBoolean()){
+                if (_r.nextBoolean()) {
                     continue;
                 }
 
-                UDP.send(serverSock, requestPacket.getAddress(), requestPacket.getPort(), replyBuffer);
+                // on successful receipt of packet, populate the receive packet object
+                Triplet<InetAddress, Integer, byte[]> replyPacket =
+                        Checksummed.Instance.sendAndReceive(clientSock, outgoingIp, _outgoingPort, requestBuffer);
+
+                byte[] replyBuffer = Checksummed.Instance.pack(replyPacket.get_third());
+                // shuffle packets randomly
+                if (_r.nextBoolean()) {
+                    replyBuffer = shuffle(replyBuffer);
+                }
+                // drop packets
+                if (_r.nextBoolean()) {
+                    continue;
+                }
+
+                Base.Instance.send(serverSock, requestPacket.get_first(), requestPacket.get_second(), replyBuffer);
             }
         } catch (IOException e) {
             e.printStackTrace();
