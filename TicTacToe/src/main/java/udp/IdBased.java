@@ -12,7 +12,7 @@ public class IdBased extends Checksummed {
 
     private ThreadLocal<Byte> _id;
 
-    private IdBased() {
+    protected IdBased() {
     }
 
     public Triplet<InetAddress, Integer, byte[]> sendAndReceive(DatagramSocket sock,

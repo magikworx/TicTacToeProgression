@@ -2,6 +2,7 @@ package udp4;
 
 import base.Game;
 import udp.IdBased;
+import udp.TcpLike;
 import util.Triplet;
 
 import java.net.DatagramSocket;
@@ -61,7 +62,7 @@ public class UdpPlayerServer implements Game.Player, Runnable {
 
             boolean shouldExit = false;
             while (!shouldExit) {
-                Triplet<InetAddress, Integer, byte[]> request = IdBased.Instance.receive(sock);
+                Triplet<InetAddress, Integer, byte[]> request = TcpLike.Instance.receive(sock);
 
                 if (request.get_third().length == 0) {
                     shouldExit = true;
@@ -73,7 +74,7 @@ public class UdpPlayerServer implements Game.Player, Runnable {
                 // filter duplicates with known answers
                 var id = requestWithId[0];
                 if (last.contains(id)) {
-                    IdBased.Instance.send(sock, request.get_first(), request.get_second(), lastResponses.get(id));
+                    TcpLike.Instance.send(sock, request.get_first(), request.get_second(), lastResponses.get(id));
                     continue;
                 }
                 // purge old responses
@@ -94,7 +95,7 @@ public class UdpPlayerServer implements Game.Player, Runnable {
                 // add newest successful response
                 last.add(id);
                 lastResponses.put(id, responseWithId);
-                IdBased.Instance.send(sock, request.get_first(), request.get_second(), responseWithId);
+                TcpLike.Instance.send(sock, request.get_first(), request.get_second(), responseWithId);
             }
         } catch (Exception e) {
             e.printStackTrace();

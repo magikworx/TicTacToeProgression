@@ -2,6 +2,7 @@ package udp4;
 
 import udp.Base;
 import udp.IdBased;
+import udp.TcpLike;
 import util.Optional;
 import util.Triplet;
 
@@ -47,11 +48,11 @@ public class UdpFaultSim implements Runnable {
             Hashtable<Byte, byte[]> history = new Hashtable();
             boolean shouldExit = false;
             while (!shouldExit) {
-                Triplet<InetAddress, Integer, byte[]> requestPacket = IdBased.Instance.receive(serverSock);
+                Triplet<InetAddress, Integer, byte[]> requestPacket = TcpLike.Instance.receive(serverSock);
                 byte[] requestBuffer = requestPacket.get_third();
 
                 if (requestBuffer.length == 0) {
-                    IdBased.Instance.send(clientSock, requestPacket.get_first(), _outgoingPort, requestBuffer);
+                    TcpLike.Instance.send(clientSock, requestPacket.get_first(), _outgoingPort, requestBuffer);
                     shouldExit = true;
                     continue;
                 }
@@ -62,10 +63,10 @@ public class UdpFaultSim implements Runnable {
                 }
 
                 // on successful receipt of packet, populate the receive packet object
-                IdBased.Instance.send(clientSock, outgoingIp, _outgoingPort, requestBuffer);
-                Triplet<InetAddress, Integer, byte[]> replyPacket = IdBased.Instance.receive(clientSock);
+                TcpLike.Instance.send(clientSock, outgoingIp, _outgoingPort, requestBuffer);
+                Triplet<InetAddress, Integer, byte[]> replyPacket = TcpLike.Instance.receive(clientSock);
 
-                byte[] replyBuffer = IdBased.Instance.pack(replyPacket.get_third());
+                byte[] replyBuffer = TcpLike.Instance.pack(replyPacket.get_third());
                 // shuffle packets randomly
                 if (_r.nextBoolean()) {
                     replyBuffer = shuffle(replyBuffer);

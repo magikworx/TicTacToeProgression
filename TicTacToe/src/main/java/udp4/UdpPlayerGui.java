@@ -2,6 +2,7 @@ package udp4;
 
 import base.Game;
 import udp.IdBased;
+import udp.TcpLike;
 import util.Optional;
 import util.Pair;
 import util.Triplet;
@@ -37,7 +38,7 @@ public class UdpPlayerGui extends JPanel {
                 while (true) {
                     byte[] statusRequestBuffer = {0, 0, 0};
                     Triplet<InetAddress, Integer, byte[]> statusResponse =
-                            IdBased.Instance.sendAndReceive(sock, receiverIp, _port, statusRequestBuffer);
+                            TcpLike.Instance.sendAndReceive(sock, receiverIp, _port, statusRequestBuffer);
                     var statusResponseBuffer = statusResponse.get_third();
                     var player = statusResponseBuffer[1];
                     var board = new int[9];
@@ -66,7 +67,7 @@ public class UdpPlayerGui extends JPanel {
                         int col = _moveRequest.get().get_second();
                         byte[] moveRequestBuffer = {1, (byte) row, (byte) col};
                         Triplet<InetAddress, Integer, byte[]> moveResponse =
-                                IdBased.Instance.sendAndReceive(sock, receiverIp, _port, moveRequestBuffer);
+                                TcpLike.Instance.sendAndReceive(sock, receiverIp, _port, moveRequestBuffer);
                         var moveResponseBuffer = moveResponse.get_third();
                         int validation = moveResponseBuffer[1];
                         _moveRequest = Optional.empty();
@@ -89,7 +90,7 @@ public class UdpPlayerGui extends JPanel {
                                     "Game Over",
                                     JOptionPane.INFORMATION_MESSAGE);
                         }
-                        IdBased.Instance.send(sock, receiverIp, _port, new byte[0]);
+                        TcpLike.Instance.send(sock, receiverIp, _port, new byte[0]);
                         break;
                     }
                 }
