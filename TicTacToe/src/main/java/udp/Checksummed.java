@@ -28,12 +28,14 @@ public class Checksummed extends Repeated {
     }
 
     public Optional<byte[]> unpack(byte[] buffer) {
-        if (buffer[0] < 0 || buffer.length < buffer[0] + 1) return Optional.empty();
-        byte[] output = new byte[buffer[0]];
-        System.arraycopy(buffer, 1, output, 0, output.length);
-        byte[] cs = checksum(output);
-        if (cs[0] == buffer[output.length + 1] && cs[1] == buffer[output.length + 2]) {
-            return Optional.of(output);
+        try{
+            byte[] output = new byte[buffer[0]];
+            System.arraycopy(buffer, 1, output, 0, output.length);
+            byte[] cs = checksum(output);
+            if (cs[0] == buffer[output.length + 1] && cs[1] == buffer[output.length + 2]) {
+                return Optional.of(output);
+            }
+        } catch (ArrayIndexOutOfBoundsException | NegativeArraySizeException ignored){
         }
         return Optional.empty();
     }
