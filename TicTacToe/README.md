@@ -1,5 +1,5 @@
 # Tic Tac Toe Progression
-## folders
+## current folders
 ### base
 base game implementation
 ### starter
@@ -24,3 +24,27 @@ simple udp implementation
   - we late send packets by swapping a packet with its retry
 ### util
 utilities and base structures for packing and transporting data
+## future folders
+### tcp0
+- tcp buys reliability and smarter control logic
+- multi-threaded connections for many clients
+- more than one game instance
+- leader boards
+### objectstreams0
+- buys ability to transmit classes across a connection and intelligently use remote objects
+- major cleanup from tcp object transmission
+## future tech
+### second game
+- connect 4?
+### load balancers
+- spread the request load to multiple server instances
+- same service, many servers
+### proxies / gateways
+- forward traffic through different routes
+- provide services on many servers through unified gateway
+- many servers, single server
+### directory server
+- intelligent routing to different remote gateways
+### cdn(?)
+- redirect traffic for static objects to more local servers
+
