@@ -1,4 +1,4 @@
-package test;
+package test.threadlike;
 
 public class oof implements Runnable {
     @Override

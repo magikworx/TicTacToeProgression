@@ -2,11 +2,13 @@ package udp3;
 
 import udp.Base;
 import udp.IdBased;
+import util.Bytes;
 import util.Triplet;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Hashtable;
 import java.util.Random;
 
 public class UdpFaultSim implements Runnable {
@@ -19,14 +21,14 @@ public class UdpFaultSim implements Runnable {
         _outgoingPort = outgoingPort;
     }
 
-    public byte[] shuffle(byte[] array) {
+    public <T> T[] shuffle(T[] array) {
         // Starting from the last element and swapping one by one.
         array = array.clone();
         for (int i = 0; i < array.length - 1; i++) {
             // Pick a random index from 0 to i
             int j = _r.nextInt(array.length - i);
             // Swap array[i] with the element at random index
-            byte temp = array[i];
+            T temp = array[i];
             array[i] = array[j];
             array[j] = temp;
         }
@@ -39,6 +41,8 @@ public class UdpFaultSim implements Runnable {
              DatagramSocket clientSock = new DatagramSocket()) {
             // create a socket that can listen in on localhost port
             InetAddress outgoingIp = InetAddress.getByName("localhost");
+
+            Hashtable<Byte, byte[]> history = new Hashtable<>();
 
             boolean shouldExit = false;
             while (!shouldExit) {
@@ -63,14 +67,24 @@ public class UdpFaultSim implements Runnable {
                 byte[] replyBuffer = IdBased.Instance.pack(replyPacket.get_third());
                 // shuffle packets randomly
                 if (_r.nextBoolean()) {
-                    replyBuffer = shuffle(replyBuffer);
+                    var b = Bytes.convert(replyBuffer);
+                    replyBuffer = Bytes.convert(shuffle(b));
                 }
                 // drop packets
                 if (_r.nextBoolean()) {
                     continue;
                 }
 
-                Base.Instance.send(serverSock, requestPacket.get_first(), requestPacket.get_second(), replyBuffer);
+                history.put(replyBuffer[0], replyBuffer);
+                if (history.size() >= 3) { // will collect at least 3 different packet kinds(usually 2/3 corrupted)
+                    // shuffle based on id
+                    var shuffled = shuffle(history.keySet().toArray(new Byte[0]));
+                    // send all in the random order
+                    for (var key : shuffled) {
+                        Base.Instance.send(serverSock, requestPacket.get_first(), requestPacket.get_second(), history.get(key));
+                    }
+                    history.clear();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

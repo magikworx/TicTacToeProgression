@@ -1,4 +1,4 @@
-package test;
+package test.threadlike;
 
 public class test {
     public static synchronized void print(String output) {

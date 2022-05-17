@@ -1,4 +1,4 @@
-package test;
+package test.threadlike;
 
 public class shared {
     public static final shared Instance = new shared();
