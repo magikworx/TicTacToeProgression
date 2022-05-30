@@ -1,4 +1,6 @@
 # Tic Tac Toe Progression
+## Discussion of UDP network protocol
+https://www.gafferongames.com/categories/building-a-game-network-protocol/
 ## current folders
 ### base
 base game implementation

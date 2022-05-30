@@ -2,9 +2,6 @@ package udp1;
 
 import base.Game;
 import starter.DumbAi;
-import udp2.UdpFaultSim;
-import udp2.UdpPlayerServer;
-import udp2.UdpPlayerTerminal;
 
 public class UdpRunner {
     public static void main(String[] args) {
