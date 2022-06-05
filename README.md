@@ -1,6 +1,4 @@
 # Tic Tac Toe Progression
-## Discussion of UDP network protocol
-https://www.gafferongames.com/categories/building-a-game-network-protocol/
 ## current folders
 ### base
 base game implementation
@@ -55,4 +53,44 @@ utilities and base structures for packing and transporting data
 - intelligent routing to different remote gateways
 ### cdn(?)
 - redirect traffic for static objects to more local servers
+
+## References
+### Networking
+
+Raw Socket Programming Tutorial
+https://beej.us/guide/bgnet/html/
+
+Discussion of UDP network protocol
+https://www.gafferongames.com/categories/building-a-game-network-protocol/
+
+### Java
+
+TBD
+
+### C/C++
+
+Intro to C
+https://beej.us/guide/bgc/html/split/
+
+Lightweight UDP library (Single Header)
+https://github.com/benhenshaw/quick_udp
+
+https://github.com/starwing/znet
+
+Lightweight Game/Gui Engine (Single Header)
+https://github.com/OneLoneCoder/olcPixelGameEngine
+
+Lightweight BDD (Behavior-Driven Design) Framework / Integration Tests
+https://github.com/grassator/bdd-for-c
+
+Lightweight TDD (Test-Driven Design) Framework / Unit Tests
+https://github.com/catchorg/Catch2
+
+Curated Header Libraries for C++
+https://github.com/p-ranav/awesome-hpp#networking
+
+Great C libraries
+https://github.com/nothings/stb
+
+https://github.com/yhirose/cpp-httplib
 
