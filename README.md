@@ -24,17 +24,23 @@ simple udp implementation
 - message id history for rejecting retries
 - expanded fault injection capability
   - we late send packets by swapping a packet with its retry
+
+### TCP0
+
+- ported UDP0 to use TCP and keep the same structure
+- provides the same reliability as UDP3(mostly) with way less code
+
 ### util
 utilities and base structures for packing and transporting data
 ## future folders
 ### tcp0
-- tcp buys reliability and smarter control logic
+- tcp0 buys reliability and smarter control logic
 - multi-threaded connections for many clients
 - more than one game instance
 - leader boards
 ### objectstreams0
 - buys ability to transmit classes across a connection and intelligently use remote objects
-- major cleanup from tcp object transmission
+- major cleanup from tcp0 object transmission
 ## future tech
 ### second game
 - connect 4?
