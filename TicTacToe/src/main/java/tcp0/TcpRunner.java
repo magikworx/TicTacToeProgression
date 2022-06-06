@@ -13,7 +13,7 @@ public class TcpRunner {
         /*
         TcpPlayerGui.Launch(8889);
         /*/
-        TcpPlayerTerminal.Launch(8889);
+//        TcpPlayerTerminal.Launch(8889);
         //*/
     }
 }

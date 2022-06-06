@@ -75,6 +75,7 @@ https://beej.us/guide/bgc/html/split/
 Lightweight UDP library (Single Header)
 https://github.com/benhenshaw/quick_udp
 
+Lightweight TCP library (Single Header)
 https://github.com/starwing/znet
 
 Lightweight Game/Gui Engine (Single Header)

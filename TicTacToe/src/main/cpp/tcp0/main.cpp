@@ -1,6 +1,7 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 
+#define ZN_IMPLEMENTATION
 #include "znet.h"
 
 #include <thread>
@@ -13,15 +14,105 @@ typedef struct MyData {
     int count = 0;
 } MyData;
 
+MyData buffer;
+zn_State  *event_loop_state = zn_newstate();
+zn_Tcp    *handle  = zn_newtcp(event_loop_state);
+
+void on_connection(void *ud, zn_Tcp *tcp, unsigned err) {
+    MyData *data = (MyData*)ud;
+    std::cout << "connected";
+    if (err != ZN_OK) { /* no lucky? let's try again. */
+        /* we use ud to find out which time we tried. */
+        fprintf(stderr, "[%p] client%d can not connect to server now: %s\n",
+                tcp, data->idx, zn_strerror(err));
+        if (++data->count < 10) {
+            fprintf(stderr, "[%p client%d just try again (%d times)! :-/ \n",
+                    tcp, data->idx, data->count);
+//                zn_connect(tcp, "127.0.0.1", PORT, 0, on_connection, data);
+        }
+        else {
+            fprintf(stderr, "[%p] client%d just give up to connect :-( \n",
+                    tcp, data->idx);
+            zn_deltcp(tcp);
+            free(data);
+        }
+        return;
+    }
+
+    printf("[%p] client%d connected to server now!\n", tcp, data->idx);
+
+    /* now we connect to the server, send something to server.
+     * when send done, on_send() is called.  */
+    /*zn_send(tcp, send_string("Hello world\n"), on_send, NULL);*/
+
+    /* but, we want not just send one message, but five messages to
+     * server. how we know which message we sent done? a idea is
+     * setting many callback functions, but the better way is use a
+     * context object to hold memories about how many message we sent.
+     * */
+    data->count = 0;
+//        zn_send(tcp, send_string("this is the first message from client!"),
+//                on_client_sent, data);
+
+    /* and we raise a request to make znet check whether server send us
+     * something ... */
+//        zn_recv(tcp, data->buffer, MYDATA_BUFLEN, on_client_recv, data);
+}
+
+void on_client_sent(void *ud, zn_Tcp *tcp, unsigned err, unsigned count) {
+    MyData *data = (MyData*)ud;
+
+    /* send work may error out, we first check the result code: */
+    if (err != ZN_OK) {
+        fprintf(stderr, "[%p] client%d meet problem when send something: %s\n",
+                tcp, data->idx, zn_strerror(err));
+        zn_deltcp(tcp); /* and we close connection. */
+        free(data);
+        return;
+    }
+
+    printf("[%p] client%d send message%d success! (%u bytes)\n",
+           tcp, data->idx, data->count, count);
+    if (++data->count > 5) {
+        printf("[%p] client%d ok, closed!\n", tcp, data->idx);
+        zn_deltcp(tcp); /* and we close connection. */
+        free(data);
+        return;
+    }
+
+    printf("[%p] client%d send message%d to server ...\n",
+           tcp, data->idx, data->count);
+//    zn_send(tcp, send_string("message from client..."),
+//            on_client_sent, data);
+}
+
+void on_client_recv(void *ud, zn_Tcp *tcp, unsigned err, unsigned count) {
+    MyData *data = (MyData*)ud; /* our data from zn_recv() */
+
+    if (err != ZN_OK) {
+        fprintf(stderr, "[%p] client%d meet error when receiving: %s",
+                tcp, data->idx, zn_strerror(err));
+        return;
+    }
+
+    fprintf(stderr, "[%p] client%d received from server(%d bytes): %.*s\n",
+            tcp, data->idx, (int)count, (int)count, data->buffer);
+}
+
+void start(){
+    if (event_loop_state == nullptr) {
+        fprintf(stderr, "create znet handler failured\n");
+        return ; /* error out */
+    }
+    zn_connect(handle, "127.0.0.1", 8889, 0, on_connection, (void*)&buffer);
+    zn_run(event_loop_state, ZN_RUN_LOOP);
+}
+
 class game {
     int connect_status = -1;
     bool should_exit = false;
     int player = 0;
     char board [9]{};
-
-    MyData buffer;
-    zn_State  *event_loop_state = nullptr; /* the znet event loop handler */
-    zn_Tcp    *handle = nullptr;
 
     std::thread background_worker{};
 public:
@@ -29,14 +120,6 @@ public:
         zn_initialize();
     }
     void start() {
-        event_loop_state = zn_newstate();
-        if (event_loop_state == nullptr) {
-            fprintf(stderr, "create znet handler failured\n");
-            connect_status = 1;
-            return ; /* error out */
-        }
-        handle = zn_newtcp(event_loop_state);
-        zn_connect(handle, "localhost", 8889, 0, on_connection, &buffer);
         background_worker = std::thread{&game::work, this};
         connect_status = 0;
     }
@@ -64,7 +147,7 @@ public:
     void make_move(int row, int col) {
         if(my_turn()) {
             const char move[] {1,(char)row,(char) col };
-            qu_send(&handle, (void*)move, 3);
+//            qu_send(&handle, (void*)move, 3);
         }
     }
 
@@ -156,10 +239,10 @@ private:
 
         while(!should_exit) {
             const char get_status[] {0,0,0};
-            qu_send(&handle, (void*)get_status, 3);
+//            qu_send(&handle, (void*)get_status, 3);
             memset(buffer, 0, 1024);
-            qu_handle sender;
-            int recv_size = qu_receive(&handle, &sender, buffer, 1024 - 1);
+//            qu_handle sender;
+            int recv_size = 0; //qu_receive(&handle, &sender, buffer, 1024 - 1);
             if (recv_size == 11 && buffer[0] == 0) {
                 player = buffer[1];
                 memcpy(board, buffer+2, 9);
